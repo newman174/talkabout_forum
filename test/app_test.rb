@@ -278,21 +278,21 @@ class ForumTest < Minitest::Test
 
   # REPLY TESTS: REPLY ID VALIDATION
 
-    def test_valid_reply_id
-      %w[81a cde12 cd 81a8 81. 81.0 a81 81_2 *].each do |bad_id|
-        get "/topics/52/replies/#{bad_id}", {}, login_hamachi
-        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+  def test_valid_reply_id
+    %w[81a cde12 cd 81a8 81. 81.0 a81 81_2 *].each do |bad_id|
+      get "/topics/52/replies/#{bad_id}", {}, login_hamachi
+      assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
 
-        get "/topics/52/replies/#{bad_id}/edit", {}, login_hamachi
-        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+      get "/topics/52/replies/#{bad_id}/edit", {}, login_hamachi
+      assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
 
-        post "/topics/52/replies/#{bad_id}/edit", {}, login_hamachi
-        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+      post "/topics/52/replies/#{bad_id}/edit", {}, login_hamachi
+      assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
 
-        post "/topics/52/replies/#{bad_id}/delete", {}, login_hamachi
-        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
-      end
+      post "/topics/52/replies/#{bad_id}/delete", {}, login_hamachi
+      assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
     end
+  end
 
   # REPLY TESTS: CREATE / READ A REPLY
 
@@ -544,5 +544,71 @@ class ForumTest < Minitest::Test
     get '/search', { query: 'hi world' }, login_newms
     assert_includes last_response.body, 'No results found'
   end
+
+  # TEST PAGE RANGE VALIDATION
+
+  def test_topics_page_valid_page
+    get '/topics', { page: 1 }, login_hamachi
+    assert_equal 200, last_response.status
+    assert_nil session[:error]
+
+    get '/topics', {}, login_hamachi
+    assert_equal 200, last_response.status
+    assert_nil session[:error]
+
+    get '/topics', { page: nil }, login_hamachi
+    assert_equal 200, last_response.status
+    assert_nil session[:error]
+  end
+
+  # rubocop:disable Metrics/MethodLength
+  def test_topics_page_invalid_page
+    get '/topics', { page: 300 }, login_hamachi
+    assert_equal 'Requested page (300) is greater than total pages (6). ' \
+                 'You have been redirected to the last page.', session[:error]
+    assert_equal 302, last_response.status
+    assert_equal 'http://example.org/topics?page=6', last_response['Location']
+
+    [0, -1, 'a', 'a1', '1a'].each do |inv_num|
+      get '/topics', { page: inv_num }, login_hamachi
+      assert_equal "Invalid page number (#{inv_num}). " \
+      'You have been redirected to the first page.', session[:error]
+      assert_equal 302, last_response.status
+      assert_equal 'http://example.org/topics?page=1', last_response['Location']
+    end
+  end
+  # rubocop:enable Metrics/MethodLength
+
+  def test_replies_page_valid_page
+    get '/topics/58', { page: 1 }, login_hamachi
+    assert_equal 200, last_response.status
+    assert_nil session[:error]
+
+    get '/topics/58', {}, login_hamachi
+    assert_equal 200, last_response.status
+    assert_nil session[:error]
+
+    get '/topics/58', { page: nil }, login_hamachi
+    assert_equal 200, last_response.status
+    assert_nil session[:error]
+  end
+
+  # rubocop:disable Metrics/MethodLength
+  def test_replies_page_invalid_page
+    get '/topics/58', { page: 300, limit: 2 }, login_hamachi
+    assert_equal 'Requested page (300) is greater than total pages (3). ' \
+                 'You have been redirected to the last page.', session[:error]
+    assert_equal 302, last_response.status
+    assert_equal 'http://example.org/topics/58?page=3', last_response['Location']
+
+    [0, -1, 'a', 'a1', '1a'].each do |inv_num|
+      get '/topics/58', { page: inv_num }, login_hamachi
+      assert_equal "Invalid page number (#{inv_num}). " \
+      'You have been redirected to the first page.', session[:error]
+      assert_equal 302, last_response.status
+      assert_equal 'http://example.org/topics/58?page=1', last_response['Location']
+    end
+  end
+  # rubocop:enable Metrics/MethodLength
 end
 # rubocop:enable Metrics/AbcSize

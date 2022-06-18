@@ -111,11 +111,28 @@ def setup_pagination(total_items)
   @limit = session[:limit]
   @total_pages = total_pages(total_items, @limit)
 
-  requested_page = params[:page].to_i.positive? ? params[:page].to_i : 1
-  @current_page = [requested_page, @total_pages].min
+  requested_page = params[:page].to_s.empty? ? 1 : params[:page]
+  validate_page_request(requested_page, @total_pages)
 
+  @current_page = requested_page.to_i
   @offset = (@current_page - 1) * @limit
   @pages_to_link = pages_to_link(@current_page, @total_pages)
+end
+
+def validate_page_request(requested_page, total_pages)
+  if requested_page.to_i > total_pages
+    session[:error] = "Requested page (#{requested_page}) is greater than total pages (#{total_pages}). " \
+                      'You have been redirected to the last page.'
+    redirect "#{@request_path}?page=#{total_pages}"
+  elsif invalid_page_num?(requested_page)
+    session[:error] = "Invalid page number (#{requested_page}). " \
+                      'You have been redirected to the first page.'
+    redirect "#{@request_path}?page=1"
+  end
+end
+
+def invalid_page_num?(page_num)
+  page_num.to_s.match?(/[^0-9]/) || !page_num.to_i.positive?
 end
 
 # ROUTE HELPERS: INPUT VALIDATION
