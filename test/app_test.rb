@@ -59,6 +59,21 @@ class ForumTest < Minitest::Test
 
   # TOPIC TESTS
 
+  # TOPIC TESTS: TOPIC ID VALIDATION
+
+  def test_valid_topic_id
+    %w[33a a 33a8 a33 33.0 33. 33_2 *].each do |bad_id|
+      get "/topics/#{bad_id}", {}, login_hamachi
+      assert_equal "Invalid Topic ID: #{bad_id}", session[:error]
+
+      get "/topics/#{bad_id}/edit", {}, login_hamachi
+      assert_equal "Invalid Topic ID: #{bad_id}", session[:error]
+
+      get "/topics/#{bad_id}/delete", {}, login_hamachi
+      assert_equal "Invalid Topic ID: #{bad_id}", session[:error]
+    end
+  end
+
   # TOPIC TESTS: CREATE TOPIC
 
   def test_new_topic_page
@@ -104,8 +119,6 @@ class ForumTest < Minitest::Test
     assert_equal 'http://example.org/signin', last_response['Location']
     assert_equal 'You must be signed in to do that.', session[:error]
   end
-
-  # TODO: write input validation tests and not found tests
 
   def test_post_new_topic_empty_fields
     post '/topics/new', { subject: '', body: 'greetings planet' }, login_newms
@@ -158,7 +171,7 @@ class ForumTest < Minitest::Test
 
     assert_equal 302, last_response.status
     assert_equal 'http://example.org/topics', last_response['Location']
-    assert_equal 'Topic not found.', session[:error]
+    assert_equal "No topic found with ID '100'.", session[:error]
   end
 
   # TOPIC TESTS: UPDATE TOPIC
@@ -262,6 +275,24 @@ class ForumTest < Minitest::Test
   end
 
   # REPLY TESTS
+
+  # REPLY TESTS: REPLY ID VALIDATION
+
+    def test_valid_reply_id
+      %w[81a cde12 cd 81a8 81. 81.0 a81 81_2 *].each do |bad_id|
+        get "/topics/52/replies/#{bad_id}", {}, login_hamachi
+        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+
+        get "/topics/52/replies/#{bad_id}/edit", {}, login_hamachi
+        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+
+        post "/topics/52/replies/#{bad_id}/edit", {}, login_hamachi
+        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+
+        post "/topics/52/replies/#{bad_id}/delete", {}, login_hamachi
+        assert_equal "Invalid Reply ID: #{bad_id}", session[:error]
+      end
+    end
 
   # REPLY TESTS: CREATE / READ A REPLY
 

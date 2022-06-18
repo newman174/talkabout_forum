@@ -48,6 +48,16 @@ before do
   end
 end
 
+before '/topics/:topic_id*' do
+  pass if params[:topic_id] == 'new'
+  check_and_set_topic_id
+end
+
+before '/topics/:topic_id/replies/:reply_id*' do
+  pass if params[:reply_id] == 'new'
+  check_and_set_reply_id
+end
+
 after do
   @storage.disconnect
 end
@@ -98,18 +108,16 @@ end
 
 # Delete a topic
 post '/topics/:topic_id/delete' do
-  topic_id = params[:topic_id].to_i
-  topic_owner_id = @storage.topic(topic_id).user_id
+  topic_owner_id = @storage.topic(@topic_id).user_id
   authorization_check(topic_owner_id)
 
-  @storage.delete_topic(topic_id)
+  @storage.delete_topic(@topic_id)
   session[:success] = 'Topic deleted.'
   redirect '/topics'
 end
 
 # View edit topic page
 get '/topics/:topic_id/edit' do
-  @topic_id = params[:topic_id].to_i
   topic_owner_id = @storage.topic(@topic_id).user_id
   authorization_check(topic_owner_id)
 
@@ -119,7 +127,6 @@ end
 
 # Edit a topic
 post '/topics/:topic_id/edit' do
-  @topic_id = params[:topic_id].to_i
   topic_owner_id = @storage.topic(@topic_id).user_id
   authorization_check(topic_owner_id)
 
@@ -143,12 +150,11 @@ end
 
 # View a single topic and its replies
 get '/topics/:topic_id' do
-  topic_id = params[:topic_id].to_i
-  setup_pagination(@storage.count_replies(topic_id))
+  setup_pagination(@storage.count_replies(@topic_id))
 
-  @topic = @storage.topic_with_replies(topic_id, @limit, @offset)
+  @topic = @storage.topic_with_replies(@topic_id, @limit, @offset)
   unless @topic
-    session[:error] = 'Topic not found.'
+    session[:error] = "No topic found with ID '#{@topic_id}'."
     redirect '/topics'
   end
 
@@ -160,14 +166,12 @@ end
 
 # Get the new reply page
 get '/topics/:topic_id/replies/new' do
-  @topic_id = params[:topic_id].to_i
   @topic = @storage.topic(@topic_id)
   erb :new_reply
 end
 
 # Reply to a topic
 post '/topics/:topic_id/replies/new' do
-  @topic_id = params[:topic_id].to_i
   @body = params[:body].strip
 
   error = error_for_input(@body, 'Body', 4000)
@@ -183,33 +187,31 @@ end
 
 # Get the edit reply page
 get '/topics/:topic_id/replies/:reply_id/edit' do
-  reply_owner_id = @storage.reply(params[:reply_id]).user_id
+  reply_owner_id = @storage.reply(@reply_id)&.user_id
   authorization_check(reply_owner_id)
 
-  @topic_id = params[:topic_id].to_i
   @topic = @storage.topic(@topic_id)
 
-  @reply = @storage.reply(params[:reply_id])
+  @reply = @storage.reply(@reply_id)
   erb :edit_reply
 end
 
 # Edit a reply
 post '/topics/:topic_id/replies/:reply_id/edit' do
-  reply_owner_id = @storage.reply(params[:reply_id]).user_id
+  reply_owner_id = @storage.reply(@reply_id)&.user_id
   authorization_check(reply_owner_id)
 
-  @topic_id = params[:topic_id].to_i
   @body = params[:body].strip
 
   error = error_for_input(@body, 'Reply body', 4000)
   if error
     @topic = @storage.topic(@topic_id)
     session[:error] = error
-    @reply = @storage.reply(params[:reply_id])
+    @reply = @storage.reply(@reply_id)
     status 422
     erb :edit_reply
   else
-    @storage.update_reply(params[:reply_id], @body)
+    @storage.update_reply(@reply_id, @body)
     session[:success] = 'Reply updated.'
     redirect session[:return_path] || "/topics/#{@topic_id}"
   end
@@ -217,10 +219,10 @@ end
 
 # Delete a Reply
 post '/topics/:topic_id/replies/:reply_id/delete' do
-  reply_owner_id = @storage.reply(params[:reply_id]).user_id
+  reply_owner_id = @storage.reply(@reply_id)&.user_id
   authorization_check(reply_owner_id)
 
-  @storage.delete_reply(params[:reply_id])
+  @storage.delete_reply(@reply_id)
   session[:success] = 'Reply deleted.'
   redirect session[:return_path] || "/topics/#{@topic_id}"
 end

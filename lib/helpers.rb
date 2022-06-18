@@ -8,6 +8,36 @@ def set_return_path
   session[:return_path] = "#{env['PATH_INFO']}?#{env['QUERY_STRING']}"
 end
 
+# ROUTE HELPERS: TOPIC IDs
+
+def check_and_set_topic_id
+  if valid_topic_id?(params[:topic_id])
+    @topic_id = params[:topic_id].to_i
+  else
+    session[:error] = "Invalid Topic ID: #{params[:topic_id]}"
+    redirect '/topics'
+  end
+end
+
+def valid_topic_id?(topic_id)
+  true unless topic_id.to_s.match?(/[^0-9]/)
+end
+
+# ROUTE HELPERS: REPLY IDs
+
+def check_and_set_reply_id
+  if valid_reply_id?(params[:reply_id])
+    @reply_id = params[:reply_id].to_i
+  else
+    session[:error] = "Invalid Reply ID: #{params[:reply_id]}"
+    redirect '/topics'
+  end
+end
+
+def valid_reply_id?(reply_id)
+  true unless reply_id.to_s.match?(/[^0-9]/)
+end
+
 # ROUTE HELPERS: AUTH
 
 def authorization_check(authorized_user_id)
