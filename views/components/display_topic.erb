@@ -1,0 +1,17 @@
+<div class="topic-body">
+  <div class="topic-meta">
+    On <%= @topic.strftime %>, <a href="/users/<%= @topic.username %>" class="inline-username-link"><%= @topic.username %></a> wrote:
+  </div>
+
+  <h2 class="subject"><%= @topic.subject %></h2>
+
+  <%== render_markdown(@topic.body) %>
+
+  <% if @topic.user_id == session[:user_id] && !in_path?('edit', 'new') %>
+    <div class="edit">
+      <a href="/topics/<%= @topic.id %>/edit" class="edit faux-button opacity-hover">
+        Edit
+      </a>
+    </div>
+  <% end %>
+</div>

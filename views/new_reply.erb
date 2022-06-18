@@ -1,0 +1,11 @@
+<%== erb :'components/display_topic' %>
+
+<form method="post" action="/topics/<%= @topic.id %>/replies/new" class="edit">
+  <div>
+    <textarea name="body" class="body-input" placeholder="Reply to this post in Markdown."><%= @body %></textarea>
+  </div>
+
+  <button type="submit">Post Reply</button>
+
+  <%== erb :'components/cancel_link' %>
+</form>

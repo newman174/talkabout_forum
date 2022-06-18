@@ -1,0 +1,9 @@
+<%== erb :'components/action_bar' %>
+
+<% if @topics.empty? %>
+  <p>No on has posted a topic yet. <a href="/topics/new">Be the first!</a></p>
+<% else %>
+  <%== erb :'components/topics_table' %>
+<% end %>
+
+<%== erb :'components/pagination_pages' %>

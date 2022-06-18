@@ -1,0 +1,10 @@
+<div class="pagination-options">
+  Results per page:
+  <% limit_options.each do |limit| %>
+    <% if limit == session[:limit] %>
+      <a id="current-limit"> <%= limit %> </a>
+    <% else%>
+      <a href="<%= params_path({ limit: limit }) %>" class="opacity-hover"> <%= limit %> </a>
+    <% end %>
+  <% end %>
+</div>

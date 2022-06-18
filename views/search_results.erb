@@ -1,0 +1,13 @@
+<%== erb :'components/action_bar' %>
+
+<div>
+  <h2 class="results">Search results for <em><%= @query %></em> :</h2>
+</div>
+
+<% if @topics.empty? %>
+  <p>No results found.</p>
+<% else %>
+  <%== erb :'components/topics_table' %>
+<% end %>
+
+<%== erb :'components/pagination_pages' %>

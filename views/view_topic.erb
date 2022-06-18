@@ -1,0 +1,29 @@
+<%== erb :'components/action_bar' %>
+
+<%== erb :'components/display_topic' %>
+
+<a href="/topics/<%= @topic.id %>/replies/new" class="opacity-hover faux-button">Reply to this Topic</a>
+
+<% unless @topic.replies.empty? %>
+  <h2 class="replies-intro">Replies:</h2>
+<% end %>
+
+<% @topic.replies.each do |reply| %>
+  <div class="reply">
+    <div class="reply-meta">
+      On <%= reply.strftime %>, <a href="/users/<%= reply.username %>" class="inline-username-link"><%= reply.username %></a> wrote:
+    </div>
+
+    <div class="reply_body">
+      <%== render_markdown(reply.body) %>
+    </div>
+
+    <% if reply.user_id == session[:user_id] %>
+        <a href="/topics/<%= @topic.id %>/replies/<%= reply.id %>/edit" class="edit opacity-hover faux-button">
+          Edit
+        </a>
+    <% end %>
+  </div>
+<% end %>
+
+<%== erb :'components/pagination_pages' %>

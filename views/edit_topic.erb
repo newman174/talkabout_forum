@@ -1,0 +1,26 @@
+<form method="post" action="/topics/<%= @topic.id %>/delete" class="delete">
+  <button type="submit" class="delete opacity-hover">Delete Topic</button>
+</form>
+
+<form method="post" action="/topics/<%= @topic.id %>/edit" class="edit">
+  <div>
+    <label for="subject">Subject:</label>
+    <div>
+      <input type="text" name="subject" class="subject-input" value="<%= (@subject || @topic.subject)&.strip %>">
+    </div>
+  </div>
+
+  <div>
+    <label for="body">Body:</label>
+    <div>
+      <textarea name="body" class="body-input"><%= (@body || @topic.body)&.strip %></textarea>
+    </div>
+  </div>
+
+  <input type="hidden" name="topic_id" value="<%= @topic_id %>">
+
+  <button type="submit">Save Changes</button>
+
+  <%== erb :'components/cancel_link' %>
+</form>
+

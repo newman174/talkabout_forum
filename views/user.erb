@@ -1,0 +1,11 @@
+<%== erb :'components/action_bar' %>
+
+<h2 class="user-view results">Posts by <em><%= @user.username %></em>:</h2>
+
+<% if @topics.empty? %>
+  <p>This user has not posted any topics.</p>
+<% else %>
+  <%== erb :'components/topics_table' %>
+<% end %>
+
+<%== erb :'components/pagination_pages' %>

@@ -1,0 +1,21 @@
+<form method="post" action="/signin" class="signin">
+  <div>
+    <label for="username"> Username:
+      <input name="username" id="username" autocomplete="username" class="username" value="<%= @username %>"/>
+    </label>
+  </div>
+
+  <div>
+    <label for="password"> Password:&nbsp;
+      <input type="password" id="password" name="password" class="password" autocomplete="current-password"/>
+    </label>
+  </div>
+
+  <div class="buttons">
+    <button type="submit">Sign In</button>
+  </div>
+</form>
+
+<div>
+  <a href="/register" class=register>Register a new account</a>
+</div>

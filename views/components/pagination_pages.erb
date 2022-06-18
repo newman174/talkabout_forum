@@ -1,0 +1,23 @@
+<ul class="page-list opacity-hover">
+  <% if @current_page > 1 %>
+    <li class="pages">
+      <a href="<%= params_path({ page: @current_page - 1 }) %>" class="opacity-hover">Previous</a>
+    </li>
+  <% end %>
+
+  <% @pages_to_link.each do |page| %>
+    <li class="pages">
+    <% if page == @current_page %>
+      <div id="current-page"><%= page %></div>
+    <% else %>
+      <a href="<%= params_path({ page: page }) %>" class="opacity-hover"><%= page %></a>
+    <% end %>
+    </li>
+  <% end %>
+
+  <% if @current_page < @pages_to_link.last %>
+    <li class="pages">
+      <a href="<%= params_path({ page: @current_page + 1 }) %>" class="opacity-hover">Next</a>
+    </li>
+  <% end %>
+</ul>

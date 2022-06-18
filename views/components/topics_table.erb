@@ -1,0 +1,45 @@
+<table class="topics-list-headers">
+  <tr class="topics-list-headers">
+      <th class="topic"><div class="header-text">Topic</div></th>
+      <th class="count-replies"><div class="header-text">Replies</div></th>
+      <th class="latest-activity"><div class="header-text">Activity</div></th>
+      <th class="edit-col"></th>
+  </tr>
+</table>
+
+<% @topics.each do |topic| %>
+  <table class="topic-listing">
+    <tr class="topic-listing">
+      <td class="subject-and-meta">
+        <a class="subject_link" href="/topics/<%= topic.id %>">
+          <%= topic.subject %>
+        </a>
+
+        <div class="time-posted">
+          Posted <%= topic.str_time_distance %> ago by
+          <a class="username_link" href="/users/<%= topic.username %>">
+            <%= topic.username %>
+          </a>
+        </div>
+      </td>
+
+      <td class="count-replies">
+        <div class="count-replies">
+          <%= topic.count_replies %>
+        </div>
+      </td>
+
+      <td class="latest-activity">
+        <div class="latest-activity">
+          <%= topic.str_dist_latest_activity %> ago
+        </div>
+      </td>
+
+      <td class="edit-col">
+        <% if topic.user_id == session[:user_id] %>
+          <a href="/topics/<%= topic.id %>/edit" class="edit faux-button opacity-hover">Edit</a>
+        <% end%>
+      </td>
+    </tr>
+  </table>
+<% end %>

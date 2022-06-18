@@ -1,0 +1,21 @@
+<form method="post" action="/topics/new" class="edit">
+  <div>
+    <label for="subject">Subject:</label>
+    <div>
+      <input type="text" name="subject" class="subject-input" value="<%= @subject %>">
+    </div>
+  </div>
+
+  <div>
+    <label for="body">Body:</label>
+    <div>
+      <textarea name="body" class="body-input" placeholder="Post here in *Markdown*"><%= @body %></textarea>
+    </div>
+  </div>
+
+  <button type="submit">Post Topic</button>
+
+  <%== erb :'components/cancel_link' %>
+
+</form>
+

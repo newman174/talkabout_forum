@@ -1,0 +1,16 @@
+<form method="post" action="/register" class="register">
+  <div>
+    <label for="username">Username:</label>
+    <input type="text" name="username" class="username" autocomplete="username" value="<%= @username %>">
+  </div>
+
+  <div>
+    <label for="password">Password:&nbsp;</label>
+    <input type="password" name="password" class="password" autocomplete="new-password" value="<%= @password %>">
+  </div>
+
+  <div class="buttons">
+    <button type="submit">Create Account</button>
+    <a href="/signin" class="cancel opacity-hover faux-button">Cancel</a>
+  </div>
+</form>
