@@ -62,18 +62,18 @@ task :createdb do
 end
 
 desc 'Drop App Database'
-task dropdb: 'schema.sql' do
+task dropdb: './data/schema.sql' do
   sh "dropdb --if-exists #{DB_NAME}"
 end
 
 desc 'Load Database Schema'
-task load_schema: 'schema.sql' do
-  sh "psql -d #{DB_NAME} < schema.sql"
+task load_schema: './data/schema.sql' do
+  sh "psql -d #{DB_NAME} < ./data/schema.sql"
 end
 
 desc 'Load Sample Data'
-task load_data: 'sample_data.sql' do
-  sh "psql -d #{DB_NAME} < sample_data.sql"
+task load_data: './data/sample_data.sql' do
+  sh "psql -d #{DB_NAME} < ./data/sample_data.sql"
 end
 
 desc 'Connect to Database in Console'
@@ -90,18 +90,18 @@ task :test_createdb do
 end
 
 desc 'Drop Test Database'
-task test_dropdb: 'schema.sql' do
+task test_dropdb: './data/schema.sql' do
   sh "dropdb --if-exists #{TEST_DB_NAME}", verbose: false
 end
 
 desc 'Load Test Database Schema'
-task test_load_schema: 'schema.sql' do
-  sh "psql --quiet -d #{TEST_DB_NAME} < schema.sql", verbose: false
+task test_load_schema: './data/schema.sql' do
+  sh "psql --quiet -d #{TEST_DB_NAME} < ./data/schema.sql", verbose: false
 end
 
 desc 'Load Test Sample Data'
-task test_load_data: 'sample_data.sql' do
-  sh "psql --quiet -d #{TEST_DB_NAME} < sample_data.sql", verbose: false
+task test_load_data: './data/sample_data.sql' do
+  sh "psql --quiet -d #{TEST_DB_NAME} < ./data/sample_data.sql", verbose: false
 end
 
 desc 'Reset the Test Database'
