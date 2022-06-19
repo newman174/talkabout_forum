@@ -123,11 +123,11 @@ def validate_page_request(requested_page, total_pages)
   if requested_page.to_i > total_pages
     session[:error] = "Requested page (#{requested_page}) is greater than total pages (#{total_pages}). " \
                       'You have been redirected to the last page.'
-    redirect "#{@request_path}?page=#{total_pages}"
+    redirect params_path({ page: total_pages })
   elsif invalid_page_num?(requested_page)
     session[:error] = "Invalid page number (#{requested_page}). " \
                       'You have been redirected to the first page.'
-    redirect "#{@request_path}?page=1"
+    redirect params_path({ page: 1 })
   end
 end
 
