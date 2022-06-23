@@ -249,8 +249,8 @@ class DatabasePersistence
   def update_reply(reply_id, body)
     sql = <<~SQL
       UPDATE replies
-        SET body = $1
-      WHERE id = $2
+         SET body = $1
+       WHERE id = $2
     SQL
 
     query(sql, body, reply_id)
@@ -307,7 +307,7 @@ class DatabasePersistence
   def user(user_id)
     sql = <<~SQL
       SELECT * FROM users
-      WHERE id = $1
+       WHERE id = $1
     SQL
 
     result = query(sql, user_id)
@@ -318,7 +318,7 @@ class DatabasePersistence
   def get_user_from_username(username)
     sql = <<~SQL
       SELECT * FROM users
-      WHERE LOWER(username) = $1
+       WHERE LOWER(username) = $1
     SQL
 
     result = query(sql, username.downcase)
@@ -360,12 +360,12 @@ class DatabasePersistence
 
     sql = <<~SQL
          SELECT t.*,
-                u.username  AS username,
-                COUNT(r.id) AS count_replies,
+                u.username         AS username,
+                COUNT(r.id)        AS count_replies,
                 MAX(r.time_posted) AS latest_reply
-           FROM topics      AS t
-      LEFT JOIN replies     AS r ON t.id = r.topic_id
-      LEFT JOIN users       AS u ON t.user_id = u.id
+           FROM topics  AS t
+      LEFT JOIN replies AS r ON t.id = r.topic_id
+      LEFT JOIN users   AS u ON t.user_id = u.id
           WHERE t.subject ILIKE $1 OR
                 t.body    ILIKE $1 OR
                 r.body    ILIKE $1 OR
