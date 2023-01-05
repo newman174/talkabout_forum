@@ -17,7 +17,9 @@ group :development do
   gem 'faker'
   gem 'pry'
   gem 'pry-nav'
-  gem 'rubocop', '~>1.3.0', require: false
+  # gem 'rubocop', '~>1.3.0', require: false
+  gem 'rubocop', require: false
+  gem 'ruby-lsp'
   gem 'solargraph'
 end
 
