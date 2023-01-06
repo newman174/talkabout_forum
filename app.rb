@@ -300,6 +300,31 @@ post '/signin' do
   end
 end
 
+# Sign in the user (API VERSION)
+post '/api/signin' do
+  @username = params[:username].strip
+  @password = params[:password].strip
+
+  @purported_user = @storage.get_user_from_username(@username)
+
+  if valid_credentials?(@username, @password)
+    session[:username] = @username
+    session[:user_id] = @purported_user.id
+    return_path = session[:return_path] || '/topics'
+    json({
+      status: 'success',
+      message: "Signed in as #{@username}.",
+      return_path: return_path,
+    })
+  else
+    status 401
+    json({
+      status: 'error',
+      message: 'Invalid username or password. Please try again.',
+    })
+  end
+end
+
 # Sign a user out
 post '/signout' do
   signout

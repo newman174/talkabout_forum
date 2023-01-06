@@ -1,7 +1,7 @@
 // api_home.js
 
 $(function () {
-  async function signin () {
+  async function signIn () {
     let formData = new FormData();
     formData.set("username", "hamachi");
     formData.set("password", "brownies");
@@ -13,7 +13,7 @@ $(function () {
     }
 
     try {
-      return await fetch('/signin', options);
+      return await fetch('/api/signin', options);
     } catch (err) {
       console.error(err);
     }
@@ -24,15 +24,17 @@ $(function () {
   let paginationLinksTempl = Handlebars.compile($('#paginationLinksTempl').html());
   Handlebars.registerPartial("topicTempl", $('#topicTempl').html());
 
-  signin().then(console.log("signed in"));
-
   let topicsGen = generator('http://localhost:4567/api/topics');
   let data;
 
-  async function getTopics () {
+  async function getTopics (path="/api/topics") {
     try {
-      let response = await topicsGen.next();
-      data = response.value;
+      let response = await fetch(path, {
+        credentials: "include",
+        contentType: "application/json",
+      });
+      data = await response.json();
+      console.table(data);
       return data;
     } catch (error) {
       console.error(error);
@@ -40,17 +42,32 @@ $(function () {
     }
   }
 
-  async function displayTopics() {
-    await getTopics();
+  async function displayTopics(path="/api/topics") {
+    await getTopics(path);
+    console.log('data["topics"] =');
+    console.table(data["topics"]);
     $('#topics-list').html(topicTableTempl({topics: data["topics"]}));
     $('#pagination-pages').html(paginationLinksTempl(data));
   }
 
-  displayTopics();
+  (async function () {
+    await signIn();
+    console.log("signed in");
+    // await getTopics();
+    await displayTopics();
+  }());
+
 
   $('#get-topics').click(function (e) {
     e.preventDefault();
-    displayTopics();
+    // displayTopics();
+  });
+  console.log("hi world")
+  $('#pagination-pages').on("click", "a", function (e) {
+    console.log(e.target);
+    e.preventDefault();
+    // getTopics($(e.target).attr("href")).then(displayTopics());
+    displayTopics($(e.target).attr("href"));
   });
 });
 

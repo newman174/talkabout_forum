@@ -47,9 +47,9 @@
 
       {{#if next}}
         <li class="pages">
-          <a href="{{next}}" class="opacity-hover">Next</a>
+          <a id="next" href="{{next}}" class="opacity-hover">Next</a>
         </li>
-      {{/if}}()
+      {{/if}}
   </script>
 
   <script src="/javascripts/topics_generator.js" type="application/javascript"></script>
@@ -58,7 +58,7 @@
 
 <% end %>
 
-<button id="get-topics">Get topics</button>
+<a id="get-topics" href="/api/topics" class="faux-button">Get topics</a>
 <table class="topics-list-headers">
   <thead>
     <tr class="topics-list-headers">
