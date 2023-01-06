@@ -1,12 +1,11 @@
 <% content_for :head do %>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
     integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script id="topicTableTempl" type="text/x-handlebars">
       {{#each topics}}
-        {{>topic}}
+        {{>topicTempl}}
       {{/each}}
   </script>
 
@@ -35,6 +34,24 @@
       </table>
   </script>
 
+  <script id="paginationLinksTempl" type="text/x-handlebars">
+      {{#if previous}}
+        <li class="pages">
+          <a href="{{previous}}" class="opacity-hover">Previous</a>
+        </li>
+      {{/if}}
+
+      <li class="pages">
+        <div id="current-page">{{current_page}}</div>
+      </li>
+
+      {{#if next}}
+        <li class="pages">
+          <a href="{{next}}" class="opacity-hover">Next</a>
+        </li>
+      {{/if}}()
+  </script>
+
   <script src="/javascripts/topics_generator.js" type="application/javascript"></script>
 
   <script src="/javascripts/api_home.js" type="application/javascript"></script>
@@ -52,5 +69,7 @@
     </tr>
   </thead>
 </table>
-  <div id="topics-list">
-  </div>
+<div id="topics-list">
+</div>
+
+<ul id="pagination-pages" class="page-list opacity-hover"></ul>

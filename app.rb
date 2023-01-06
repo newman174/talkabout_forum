@@ -103,6 +103,7 @@ get '/api/topics' do
   # results[:pages] = @pages_to_link
   results[:previous] = params_path({ page: @current_page - 1 }) if @current_page > 1
   results[:next] = params_path({ page: @current_page + 1 })
+  results[:current_page] = @current_page;
   results[:topics] = results[:topics].map(&:to_h)
   json results
 end

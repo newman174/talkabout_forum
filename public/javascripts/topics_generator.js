@@ -18,7 +18,9 @@ async function* generator(page) {
     // for (let topic of data["topics"]) {
     //   yield topic;
     // }
-    yield(data["topics"]);
+    console.table(data);
+    // yield(data["topics"]);
+    yield(data);
 
     // extract the URL of the next page from the headers
     page = data["next"];

@@ -21,33 +21,29 @@ $(function () {
 
   let topicTableTempl = Handlebars.compile($('#topicTableTempl').html());
   let topicTempl      = Handlebars.compile($('#topicTempl').html());
-  Handlebars.registerPartial("topic", topicTempl);
+  let paginationLinksTempl = Handlebars.compile($('#paginationLinksTempl').html());
+  Handlebars.registerPartial("topicTempl", $('#topicTempl').html());
 
   signin().then(console.log("signed in"));
 
   let topicsGen = generator('http://localhost:4567/api/topics');
-  let topics;
+  let data;
 
   async function getTopics () {
-    topicsGen.next()
-    .then((response) => {
-      console.log("response:")
-      console.table(response);
-      return response.value;
-    })
-    .then((returnedTopics) => {
-      console.log("returnedTopics:")
-      console.table(returnedTopics);
-      topics = returnedTopics
-      return topics;
-    })
-    .catch(console.error);
+    try {
+      let response = await topicsGen.next();
+      data = response.value;
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   async function displayTopics() {
     await getTopics();
-    const html = topicTableTempl({topics});
-    $('#topics-list').html(html);
+    $('#topics-list').html(topicTableTempl({topics: data["topics"]}));
+    $('#pagination-pages').html(paginationLinksTempl(data));
   }
 
   displayTopics();
