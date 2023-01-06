@@ -102,8 +102,14 @@ class DatabasePersistence
          OFFSET $2
     SQL
 
-    result = query(sql, limit, offset)
-    result.map { |tuple| tuple_to_topic(tuple) }
+    topics = query(sql, limit, offset)
+    topics = topics.map { |tuple| tuple_to_topic(tuple) }
+    # topics = topics.map(&:to_h)
+    {
+      limit: limit,
+      offset: offset,
+      topics: topics
+    }
   end
   # rubocop:enable Metrics/MethodLength
 

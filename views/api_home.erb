@@ -1,55 +1,44 @@
 <% content_for :head do %>
-<script id="templateId" type="text/x-handlebars">
 
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
-  integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+    integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<script id="topicTableTempl" type="text/x-handlebars">
-    {{#each topics}}
-    <tr topic="topic-listing">
-      {{>topic}}
-    </tr>
-    {{/each}}
-</script>
-<script id="topicTempl" type="text/x-handlebars">
-    <table class="topic-listing">
-      <tr class="topic-listing">
-        <td class="subject-and-meta">
-          <a class="subject_link" href="/topics/{{topic_id}}">
-            {{subject}}
-          </a>
+  <script id="topicTableTempl" type="text/x-handlebars">
+      {{#each topics}}
+        {{>topic}}
+      {{/each}}
+  </script>
 
-          <div class="time-posted">
-            Posted ago by
-            <a class="username_link" href="/users/{{username}}">
-              {{username}}
+  <script id="topicTempl" type="text/x-handlebars">
+      <table class="topic-listing">
+        <tr class="topic-listing">
+          <td class="subject-and-meta">
+            <a class="subject_link" href="/topics/{{id}}">
+              {{subject}}
             </a>
-          </div>
-        </td>
 
-        <td class="count-replies">
-          <div class="count-replies">
-            {{count_replies}}
-          </div>
-        </td>
+            <div class="time-posted">
+              Posted ago by
+              <a class="username_link" href="/users/{{username}}">
+                {{username}}
+              </a>
+            </div>
+          </td>
 
-        <td class="latest-activity">
-          <div class="latest-activity">
-            ago
-          </div>
-        </td>
+          <td class="count-replies">
+            <div class="count-replies">
+              {{count_replies}}
+            </div>
+          </td>
+        </tr>
+      </table>
+  </script>
 
-        <%# <td class="edit-col"> %>
-          <%# <% if topic.user_id == session[:user_id] %> %>
-            <%# <a href="/topics/<%= topic.id %>/edit" class="edit faux-button opacity-hover">Edit</a> %>
-          <%# <% end%> %>
-        <%# </td> %>
-      </tr>
-    </table>
-</script>
-<script src="/javascripts/api_home.js" type="application/javascript"></script>
+  <script src="/javascripts/topics_generator.js" type="application/javascript"></script>
+
+  <script src="/javascripts/api_home.js" type="application/javascript"></script>
+
 <% end %>
 
 <button id="get-topics">Get topics</button>
@@ -63,3 +52,5 @@
     </tr>
   </thead>
 </table>
+  <div id="topics-list">
+  </div>
