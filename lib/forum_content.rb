@@ -46,7 +46,7 @@ class ForumContent
       body: body,
       username: username,
       user_id: user_id,
-      time_posted: time_posted
+      time_posted: time_posted,
     }
   end
 
@@ -112,7 +112,9 @@ class Topic < ForumContent
       subject: subject,
       replies: replies.map(&:to_h),
       count_replies: count_replies,
-      latest_reply: latest_reply
+      latest_reply: latest_reply,
+      str_time_ago: str_time_distance,
+      str_latest_activity: str_dist_latest_activity
     }
   end
 end

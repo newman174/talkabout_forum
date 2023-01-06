@@ -57,26 +57,9 @@ $(function () {
     await displayTopics();
   }());
 
-
-  $('#get-topics').click(function (e) {
-    e.preventDefault();
-    // displayTopics();
-  });
-  console.log("hi world")
   $('#pagination-pages').on("click", "a", function (e) {
     console.log(e.target);
     e.preventDefault();
-    // getTopics($(e.target).attr("href")).then(displayTopics());
     displayTopics($(e.target).attr("href"));
   });
 });
-
-// id
-// body
-// username
-// user_id
-// time_posted
-// subject
-// replies
-// count_replies
-// latest_reply

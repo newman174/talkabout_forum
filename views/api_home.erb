@@ -18,7 +18,7 @@
             </a>
 
             <div class="time-posted">
-              Posted ago by
+              Posted {{str_time_ago}} ago by
               <a class="username_link" href="/users/{{username}}">
                 {{username}}
               </a>
@@ -29,6 +29,18 @@
             <div class="count-replies">
               {{count_replies}}
             </div>
+          </td>
+
+          <td class="latest-activity">
+            <div class="latest-activity">
+              {{str_latest_activity}} ago
+            </div>
+          </td>
+
+          <td class="edit-col">
+            {{#if editable}}
+              <a href="/topics/{{id}}/edit" class="edit faux-button opacity-hover">Edit</a>
+            {{/if}}
           </td>
         </tr>
       </table>
@@ -58,7 +70,6 @@
 
 <% end %>
 
-<a id="get-topics" href="/api/topics" class="faux-button">Get topics</a>
 <table class="topics-list-headers">
   <thead>
     <tr class="topics-list-headers">

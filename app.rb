@@ -96,15 +96,22 @@ get '/topics/new' do
   erb :new_topic
 end
 
+# Get a batch of topics as JSON
 get '/api/topics' do
   setup_pagination(@storage.count_topics)
-  # json @storage.get_topics(@limit, @offset).map(&:to_h)
   results = @storage.get_topics(@limit, @offset)
-  # results[:pages] = @pages_to_link
+
+  results[:current_page] = @current_page;
   results[:previous] = params_path({ page: @current_page - 1 }) if @current_page > 1
   results[:next] = params_path({ page: @current_page + 1 })
-  results[:current_page] = @current_page;
+
   results[:topics] = results[:topics].map(&:to_h)
+  results[:topics].each do |topic|
+    topic[:editable] = topic[:user_id] == session[:user_id]
+  end
+
+  results[:user_id] = session[:user_id]
+  pp results
   json results
 end
 
