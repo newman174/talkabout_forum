@@ -13,6 +13,10 @@ gem 'redcarpet'
 gem 'sinatra'
 gem 'sinatra-contrib'
 
+group :development, :test do
+  gem 'rerun'
+end
+
 group :development do
   gem 'faker'
   gem 'pry'

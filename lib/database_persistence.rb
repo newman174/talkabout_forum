@@ -194,6 +194,7 @@ class DatabasePersistence
            VALUES ($1, $2, $3);
     SQL
     query(sql, user_id, topic_id, body)
+    last_reply_id
   end
 
   # Load a Reply object into the database
@@ -274,6 +275,16 @@ class DatabasePersistence
     SQL
 
     query(sql, topic_id).first['count'].to_i if valid_id?(topic_id)
+  end
+
+  # Return the id of the most recently posted reply
+  def last_reply_id
+    sql = <<~SQL
+        SELECT id FROM replies
+      ORDER BY id DESC
+          LIMIT 1;
+    SQL
+    query(sql).first['id'].to_i
   end
 
   # USERS

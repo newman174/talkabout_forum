@@ -40,6 +40,16 @@ class ForumContent
     distance_of_time_in_words(Time.now, @time_posted).capitalize
   end
 
+  def to_h
+    {
+      id: id,
+      body: body,
+      username: username,
+      user_id: user_id,
+      time_posted: time_posted
+    }
+  end
+
   def to_s
     body
   end
@@ -95,6 +105,16 @@ class Topic < ForumContent
     "@count_replies = #{@count_replies}, " \
     "@latest_reply = #{@latest_reply}, "
   end
+
+  def to_h
+    {
+      **super,
+      subject: subject,
+      replies: replies.map(&:to_h),
+      count_replies: count_replies,
+      latest_reply: latest_reply
+    }
+  end
 end
 
 # Replies to topics have standard metadata and a body
@@ -112,5 +132,12 @@ class Reply < ForumContent
 
   def inspect
     super + ", @topic_id = #{@topic_id}"
+  end
+
+  def to_h
+    {
+      **super,
+      topic_id: topic_id
+    }
   end
 end

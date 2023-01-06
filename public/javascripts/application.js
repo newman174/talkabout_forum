@@ -4,7 +4,10 @@ $(function() {
 
     var ok = confirm("Are you sure? this cannot be undone!");
     if (ok) {
-      this.submit();
+      // this.submit();
+      let request = new XMLHttpRequest(); // Instantiate new XMLHttpRequest object
+      request.open('delete', '/path');       // Set HTTP method and URL on request
+      request.send();                     // Send request
     }
   });
 

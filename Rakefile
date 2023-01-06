@@ -23,7 +23,8 @@ desc 'Start development server'
 task :start_dev do
   program_file = "#{APP_NAME}.rb"
   puts ">> Rake is running #{program_file}:\n\n"
-  system "bundle exec ruby #{program_file} -o 0.0.0.0 -e development"
+  # system "bundle exec ruby #{program_file} -o 0.0.0.0 -e development"
+  system "bundle exec rerun \"#{program_file} -o 0.0.0.0 -e development\""
 end
 
 desc 'Run test files'

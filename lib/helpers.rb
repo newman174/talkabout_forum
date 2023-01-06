@@ -30,7 +30,8 @@ def check_and_set_reply_id
     @reply_id = params[:reply_id].to_i
   else
     session[:error] = "Invalid Reply ID: #{params[:reply_id]}"
-    redirect '/topics'
+    json({status: 'error', message: "Invalid Reply ID: #{params[:reply_id]}" })
+    # redirect '/topics'
   end
 end
 

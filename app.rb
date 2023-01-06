@@ -5,6 +5,7 @@ require 'encrypted_cookie'
 require 'redcarpet'
 require 'sinatra'
 require 'sinatra/content_for'
+require 'sinatra/json'
 require 'tilt/erubis'
 
 require_relative './lib/database_persistence'
@@ -19,13 +20,8 @@ configure do
 end
 
 configure(:development) do
-  require 'sinatra/reloader'
   require 'pry'
   require 'pry-nav'
-  also_reload './lib/database_persistence.rb'
-  also_reload './lib/forum_content.rb'
-  also_reload './lib/forum_user.rb'
-  also_reload './lib/helpers.rb'
 end
 
 configure(:production, :development) do
@@ -53,7 +49,16 @@ before '/topics/:topic_id*' do
   check_and_set_topic_id
 end
 
+before '/api/topics/*' do
+  check_and_set_topic_id
+end
+
 before '/topics/:topic_id/replies/:reply_id*' do
+  pass if params[:reply_id] == 'new'
+  check_and_set_reply_id
+end
+
+before '/api/topics/:topic_id/replies/:reply_id' do
   pass if params[:reply_id] == 'new'
   check_and_set_reply_id
 end
@@ -63,13 +68,17 @@ after do
 end
 
 not_found do
-  session[:error] = "Page not found:  \"#{@request_path}\""
+  session[:error] = "Page not found: \"#{@request_path}\""
   redirect '/'
 end
 
 get '/' do
   redirect '/topics' if signed_in?
   redirect '/signin'
+end
+
+get '/api/home' do
+  erb :api_home
 end
 
 # TOPICS
@@ -87,8 +96,14 @@ get '/topics/new' do
   erb :new_topic
 end
 
+get '/api/topics' do
+  setup_pagination(@storage.count_topics)
+  json @storage.get_topics(@limit, @offset).map(&:to_h)
+end
+
 # Create a new topic
-post '/topics/new' do
+# post '/topics' do
+post '/api/topics' do
   @subject = params[:subject]&.strip
   @body = params[:body]&.strip
 
@@ -98,22 +113,26 @@ post '/topics/new' do
 
   if error
     session[:error] = error
-    erb :new_topic
+    # erb :new_topic
+    json({ error: error })
   else
     topic_id = @storage.new_topic(session[:user_id], @subject, @body)
     session[:success] = 'Topic posted.'
-    redirect "/topics/#{topic_id}"
+    # redirect "/topics/#{topic_id}"
+    json({ status: "success", topic_id: topic_id })
   end
 end
 
 # Delete a topic
-post '/topics/:topic_id/delete' do
+# delete '/topics/:topic_id' do
+delete '/api/topics/:topic_id' do
   topic_owner_id = @storage.topic(@topic_id).user_id
   authorization_check(topic_owner_id)
 
   @storage.delete_topic(@topic_id)
   session[:success] = 'Topic deleted.'
-  redirect '/topics'
+  json({ status: 'success', message: 'Topic deleted.' })
+  # redirect '/topics'
 end
 
 # View edit topic page
@@ -126,8 +145,9 @@ get '/topics/:topic_id/edit' do
 end
 
 # Edit a topic
-post '/topics/:topic_id/edit' do
-  topic_owner_id = @storage.topic(@topic_id).user_id
+put '/api/topics/:topic_id' do
+  @topic = @storage.topic(@topic_id)
+  topic_owner_id = @topic.user_id
   authorization_check(topic_owner_id)
 
   @subject = params[:subject].strip
@@ -138,13 +158,14 @@ post '/topics/:topic_id/edit' do
   error = error_subj || error_body
 
   if error
-    @topic = @storage.topic(@topic_id)
     session[:error] = error
-    erb :edit_topic
+    # erb :edit_topic
+    json({ status: "error", message: "error" })
   else
     @storage.update_topic(@topic_id, @subject, @body)
     session[:success] = 'Topic updated.'
-    redirect "/topics/#{@topic_id}"
+    json(@storage.topic(@topic_id).to_h)
+    # redirect "/topics/#{@topic_id}"
   end
 end
 
@@ -162,6 +183,19 @@ get '/topics/:topic_id' do
   erb :view_topic
 end
 
+get '/api/topics/:topic_id' do
+  setup_pagination(@storage.count_replies(@topic_id))
+  topic = @storage.topic_with_replies(@topic_id, @limit, @offset)
+  unless topic
+    json({
+           status: 404,
+           message: "No topic found with ID '#{@topic_id}'."
+         })
+  end
+
+  json(topic.to_h)
+end
+
 # REPLIES
 
 # Get the new reply page
@@ -171,17 +205,19 @@ get '/topics/:topic_id/replies/new' do
 end
 
 # Reply to a topic
-post '/topics/:topic_id/replies/new' do
+post '/api/topics/:topic_id/replies' do
   @body = params[:body].strip
 
   error = error_for_input(@body, 'Body', 4000)
   if error
     @topic = @storage.topic(@topic_id)
     session[:error] = error
-    erb :new_reply
+    # erb :new_reply
+    json({ status: 'error', message: error })
   else
-    @storage.new_reply(session[:user_id], @topic_id, @body)
-    redirect "/topics/#{@topic_id}?page=#{last_page(@topic_id)}"
+    reply_id = @storage.new_reply(session[:user_id], @topic_id, @body)
+    # redirect "/topics/#{@topic_id}?page=#{last_page(@topic_id)}"
+    json @storage.reply(reply_id).to_h
   end
 end
 
@@ -197,28 +233,31 @@ get '/topics/:topic_id/replies/:reply_id/edit' do
 end
 
 # Edit a reply
-post '/topics/:topic_id/replies/:reply_id/edit' do
+put '/api/topics/:topic_id/replies/:reply_id' do
+  # check_and_set_reply_id
   reply_owner_id = @storage.reply(@reply_id)&.user_id
   authorization_check(reply_owner_id)
-
   @body = params[:body].strip
 
   error = error_for_input(@body, 'Reply body', 4000)
+
   if error
     @topic = @storage.topic(@topic_id)
     session[:error] = error
     @reply = @storage.reply(@reply_id)
     status 422
-    erb :edit_reply
+    # erb :edit_reply
+    json({ status: error, message: error })
   else
     @storage.update_reply(@reply_id, @body)
     session[:success] = 'Reply updated.'
-    redirect session[:return_path] || "/topics/#{@topic_id}"
+    json(@storage.reply(@reply_id).to_h)
+    # redirect session[:return_path] || "/topics/#{@topic_id}"
   end
 end
 
 # Delete a Reply
-post '/topics/:topic_id/replies/:reply_id/delete' do
+delete '/api/topics/:topic_id/replies/:reply_id' do
   reply_owner_id = @storage.reply(@reply_id)&.user_id
   authorization_check(reply_owner_id)
 
@@ -267,7 +306,7 @@ get '/register' do
 end
 
 # Register a new user
-post '/register' do
+post '/users' do
   @username = params['username'].strip
   @password = params['password'].strip
 

@@ -1,8 +1,8 @@
-<form method="post" action="/topics/<%= @topic.id %>/delete" class="delete">
+<form method="post" action="/api/topics/<%= @topic.id %>" class="delete">
   <button type="submit" class="delete opacity-hover">Delete Topic</button>
 </form>
 
-<form method="post" action="/topics/<%= @topic.id %>/edit" class="edit">
+<form method="post" action="/api/topics/<%= @topic.id %>" class="edit">
   <div>
     <label for="subject">Subject:</label>
     <div>
@@ -23,4 +23,3 @@
 
   <%== erb :'components/cancel_link' %>
 </form>
-

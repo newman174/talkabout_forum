@@ -1,10 +1,10 @@
 <%== erb :'components/display_topic' %>
 
-<form method="post" action="/topics/<%= @topic_id %>/replies/<%= @reply.id %>/delete" class="delete">
+<form method="post" action="/api/replies/<%= @reply.id %>" class="delete">
   <button type="submit" class="delete opacity-hover">Delete Reply</button>
 </form>
 
-<form method="post" action="/topics/<%= @topic_id %>/replies/<%= @reply.id %>/edit" class="edit">
+<form method="post" action="/api/replies/<%= @reply.id %>" class="edit">
   <div>
     <label for="body">Reply:</label>
     <div>
@@ -16,4 +16,3 @@
 
   <%== erb :'components/cancel_link' %>
 </form>
-
