@@ -10,7 +10,8 @@
   </script>
 
   <script id="topicTempl" type="text/x-handlebars">
-      <table class="topic-listing">
+      <table class="topic-listing" data-topic-id="{{id}}">
+      <tbody>
         <tr class="topic-listing">
           <td class="subject-and-meta">
             <a class="subject_link" href="/topics/{{id}}">
@@ -43,6 +44,8 @@
             {{/if}}
           </td>
         </tr>
+      </tbody>
+
       </table>
   </script>
 

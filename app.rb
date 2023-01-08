@@ -111,8 +111,27 @@ get '/api/topics' do
   end
 
   results[:user_id] = session[:user_id]
-  pp results
+  # pp results
   json results
+end
+
+# Get display topic subpage
+# View a single topic and its replies
+get '/api/displaytopic/:topic_id' do
+  check_and_set_topic_id
+  setup_pagination(@storage.count_replies(@topic_id))
+
+  @topic = @storage.topic_with_replies(@topic_id, @limit, @offset)
+  # pp params
+  # pp @topic
+  unless @topic
+    session[:error] = "No topic found with ID '#{@topic_id}'."
+    status 404
+    # redirect '/topics'
+  end
+
+  # set_return_path
+  erb :'components/display_topic'
 end
 
 # Create a new topic
